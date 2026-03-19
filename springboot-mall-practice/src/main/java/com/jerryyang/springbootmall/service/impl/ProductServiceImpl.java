@@ -1,5 +1,6 @@
 package com.jerryyang.springbootmall.service.impl;
 
+import com.jerryyang.springbootmall.constant.ProductCategory;
 import com.jerryyang.springbootmall.dao.ProductDao;
 import com.jerryyang.springbootmall.dto.ProductRequest;
 import com.jerryyang.springbootmall.model.Product;
@@ -16,8 +17,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductDao productDao;
 
     @Override
-    public List<Product> getProducts() {
-        return productDao.getProducts();
+    public List<Product> getProducts(ProductCategory category, String search) {
+        return productDao.getProducts(category, search);
     }
 
     @Override
