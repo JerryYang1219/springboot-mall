@@ -2,6 +2,7 @@ package com.jerryyang.springbootmall.dao.impl;
 
 import com.jerryyang.springbootmall.constant.ProductCategory;
 import com.jerryyang.springbootmall.dao.ProductDao;
+import com.jerryyang.springbootmall.dto.ProductQueryParams;
 import com.jerryyang.springbootmall.dto.ProductRequest;
 import com.jerryyang.springbootmall.model.Product;
 import com.jerryyang.springbootmall.rowmapper.ProductRowMapper;
@@ -21,7 +22,7 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, " +
                 "created_date, last_modified_date FROM product WHERE 1=1"; // WHERE 1=1 不影響查詢，為了方便連接sql
 
@@ -29,15 +30,15 @@ public class ProductDaoImpl implements ProductDao {
 
         //在controller中設定category、search為不必填參數，有可能為null，所以需有if判斷式不是null時才拼上sql語法
         //查詢商品分類
-        if(category != null){
+        if(productQueryParams.getCategory() != null){
             sql = sql + " AND category = :category"; //AND前面必需要有空白
-            map.put("category", category.name());
+            map.put("category", productQueryParams.getCategory().name());
         }
 
         //篩選出包含這個關鍵字的商品
-        if(search != null){
+        if(productQueryParams.getCategory() != null){
             sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + search + "%"); //模糊查詢%需要寫在map的值中，寫在sql語法會報錯
+            map.put("search", "%" + productQueryParams.getCategory() + "%"); //模糊查詢%需要寫在map的值中，寫在sql語法會報錯
         }
 
         //使用query()查詢商品數據

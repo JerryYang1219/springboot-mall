@@ -1,6 +1,7 @@
 package com.jerryyang.springbootmall.controller;
 
 import com.jerryyang.springbootmall.constant.ProductCategory;
+import com.jerryyang.springbootmall.dto.ProductQueryParams;
 import com.jerryyang.springbootmall.dto.ProductRequest;
 import com.jerryyang.springbootmall.model.Product;
 import com.jerryyang.springbootmall.service.ProductService;
@@ -22,10 +23,15 @@ public class ProductController {
     //搜尋列表功能
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(//@RequestParam 從url中取得道的請求參數，required = false不是必填參數
-            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) ProductCategory category, //商品分類
             @RequestParam(required = false) String search  //關鍵字實作
     ){
-        List<Product> productList = productService.getProducts(category, search);
+        //將參數統整至ProductQueryParams做管理
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
+
+        List<Product> productList = productService.getProducts(productQueryParams);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
