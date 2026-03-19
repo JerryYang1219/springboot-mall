@@ -22,14 +22,22 @@ public class ProductController {
 
     //搜尋列表功能
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(//@RequestParam 從url中取得道的請求參數，required = false不是必填參數
+    public ResponseEntity<List<Product>> getProducts(
+            //@RequestParam 從url中取得道的請求參數，required = false不是必填參數
+            //查詢條件 Filtering
             @RequestParam(required = false) ProductCategory category, //商品分類
-            @RequestParam(required = false) String search  //關鍵字實作
+            @RequestParam(required = false) String search,  //關鍵字實作
+
+            //排序 Sorting
+            @RequestParam(defaultValue = "created_date") String orderBy, // 設定預設值
+            @RequestParam(defaultValue = "desc") String sort //設定預設值為大->小之排序
     ){
         //將參數統整至ProductQueryParams做管理
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
+        productQueryParams.setOrderBy(orderBy);
+        productQueryParams.setSort(sort);
 
         List<Product> productList = productService.getProducts(productQueryParams);
 

@@ -36,10 +36,13 @@ public class ProductDaoImpl implements ProductDao {
         }
 
         //篩選出包含這個關鍵字的商品
-        if(productQueryParams.getCategory() != null){
+        if(productQueryParams.getSearch() != null){
             sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getCategory() + "%"); //模糊查詢%需要寫在map的值中，寫在sql語法會報錯
+            map.put("search", "%" + productQueryParams.getSearch() + "%"); //模糊查詢%需要寫在map的值中，寫在sql語法會報錯
         }
+
+        //使用字串拼接方式把sql拼起來。兩個參數有預設值，不需有null判斷式
+        sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
         //使用query()查詢商品數據
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
