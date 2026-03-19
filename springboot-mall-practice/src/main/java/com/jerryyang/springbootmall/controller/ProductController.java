@@ -5,6 +5,7 @@ import com.jerryyang.springbootmall.dto.ProductQueryParams;
 import com.jerryyang.springbootmall.dto.ProductRequest;
 import com.jerryyang.springbootmall.model.Product;
 import com.jerryyang.springbootmall.service.ProductService;
+import com.jerryyang.springbootmall.util.Page;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -25,7 +26,7 @@ public class ProductController {
 
     //搜尋列表功能
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             //@RequestParam 從url中取得道的請求參數，required = false不是必填參數
             //查詢條件 Filtering
             @RequestParam(required = false) ProductCategory category, //商品分類
@@ -48,9 +49,20 @@ public class ProductController {
         productQueryParams.setLimit(limit);
         productQueryParams.setOffset(offset);
 
+        //取得 product list 商品列表的數據
         List<Product> productList = productService.getProducts(productQueryParams);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+        //取得 product 總數
+        Integer total = productService.countProduct(productQueryParams);
+
+        //分頁，返回更多資訊給前端
+        Page<Product> page = new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResults(productList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     //查詢商品功能
