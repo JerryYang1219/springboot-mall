@@ -1,6 +1,7 @@
 package com.jerryyang.springbootmall.service.impl;
 
 import com.jerryyang.springbootmall.dao.UserDao;
+import com.jerryyang.springbootmall.dto.UserLoginRequest;
 import com.jerryyang.springbootmall.dto.UserRegisterRequest;
 import com.jerryyang.springbootmall.model.User;
 import com.jerryyang.springbootmall.service.UserService;
@@ -37,5 +38,26 @@ public class UserServiceImpl implements UserService {
 
         //創建帳號
         return userDao.createUser(userRegisterRequest);
+    }
+
+    @Override
+    public User login(UserLoginRequest userLoginRequest) {
+        //根據前端傳入的 Email，向 DAO 層請求查詢該使用者資料
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+
+        //檢查資料庫是否存在該 Email 的紀錄
+        if(user == null){
+            //若找不到，記錄 Warn Log 並拋出 400 Bad Request 異常
+            log.warn("該 email {} 尚未註冊", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        //比對資料庫內存儲的密碼與前端傳入的密碼是否一致
+        if(user.getPassword().equals(userLoginRequest.getPassword())){
+            return user;
+        } else{
+            log.warn("email {} 的密碼不正確", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
