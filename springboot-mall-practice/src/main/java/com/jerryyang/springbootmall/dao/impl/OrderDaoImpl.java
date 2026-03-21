@@ -2,7 +2,10 @@ package com.jerryyang.springbootmall.dao.impl;
 
 
 import com.jerryyang.springbootmall.dao.OrderDao;
+import com.jerryyang.springbootmall.model.Order;
 import com.jerryyang.springbootmall.model.OrderItem;
+import com.jerryyang.springbootmall.rowmapper.OrderItemRowMapper;
+import com.jerryyang.springbootmall.rowmapper.OrderRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,6 +23,48 @@ public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public Order getOrderById(Integer orderId) {
+        //定義 SQL 查詢語句
+        String sql = "SELECT order_id, user_id, total_amount, created_date, last_modified_date " +
+                "FROM `order` WHERE order_id = :order_id";
+
+        //建立參數 Map
+        Map<String, Object> map = new HashMap<>();
+        map.put("order_id", orderId);
+
+        //執行查詢
+        List<Order> orderList = namedParameterJdbcTemplate.query(sql, map, new OrderRowMapper());
+
+        //判斷查詢結果
+        if(orderList.size() > 0){
+            return orderList.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<OrderItem> getOrderItemByOrderId(Integer orderId) {
+        //定義 SQL 語句：使用 LEFT JOIN 將 order_item (oi) 與 product (p) 串連起來。
+        //目的：透過 product_id 取得商品的「名稱」與「圖片網址」，讓訂單資訊更完整。
+        String sql = "SELECT oi.order_item_id, oi.order_id, oi.product_id, oi.quantity, oi.amount, p.product_name, p.image_url " +
+                "FROM order_item as oi " +
+                "LEFT JOIN product as p ON oi.product_id = p.product_id " +
+                "WHERE oi.order_id = :order_id";
+
+        //建立參數 Map
+        Map<String, Object> map = new HashMap<> () ;
+        map.put("order_id", orderId);
+
+        //執行查詢：將結果透過 OrderItemRowMapper 轉換為 List<OrderItem>
+        //**這裡的 RowMapper 必須能處理來自不同表格 (p.product_name) 的欄位
+        List<OrderItem> orderItemList = namedParameterJdbcTemplate.query(sql, map, new OrderItemRowMapper());
+
+        //回傳該訂單的所有明細清單
+        return orderItemList;
+    }
 
     @Override
     public Integer createOrder(Integer userId, Integer totalAmount) {

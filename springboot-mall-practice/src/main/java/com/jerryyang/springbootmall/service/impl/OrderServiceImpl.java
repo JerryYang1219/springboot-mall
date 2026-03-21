@@ -4,6 +4,7 @@ import com.jerryyang.springbootmall.dao.OrderDao;
 import com.jerryyang.springbootmall.dao.ProductDao;
 import com.jerryyang.springbootmall.dto.BuyItem;
 import com.jerryyang.springbootmall.dto.CreateOrderRequest;
+import com.jerryyang.springbootmall.model.Order;
 import com.jerryyang.springbootmall.model.OrderItem;
 import com.jerryyang.springbootmall.model.Product;
 import com.jerryyang.springbootmall.service.OrderService;
@@ -21,6 +22,20 @@ public class OrderServiceImpl implements OrderService {
     private OrderDao orderDao;
     @Autowired
     private ProductDao productDao;
+
+    @Override
+    public Order getOrderById(Integer orderId) {
+        //根據 orderId 去 order table 中查出這一筆訂單總資訊出來(userId、totalAmount)
+        Order order = orderDao.getOrderById(orderId);
+
+        //再去 order_item 表中查詢這筆訂單對應的「所有商品明細」。
+        List<OrderItem> orderItemList = orderDao.getOrderItemByOrderId(orderId);
+
+        //將查到的「明細清單」塞回「訂單物件」的變數中。
+        order.setOrderItemList(orderItemList);
+
+        return order;
+    }
 
     @Transactional //操作多張資料表時必要註解，都成功or都失敗，避免資料庫不一致
     @Override
