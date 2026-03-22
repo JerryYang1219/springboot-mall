@@ -5,6 +5,7 @@ import com.jerryyang.springbootmall.dao.ProductDao;
 import com.jerryyang.springbootmall.dao.UserDao;
 import com.jerryyang.springbootmall.dto.BuyItem;
 import com.jerryyang.springbootmall.dto.CreateOrderRequest;
+import com.jerryyang.springbootmall.dto.OrderQueryParams;
 import com.jerryyang.springbootmall.model.Order;
 import com.jerryyang.springbootmall.model.OrderItem;
 import com.jerryyang.springbootmall.model.Product;
@@ -34,6 +35,28 @@ public class OrderServiceImpl implements OrderService {
     private UserDao userDao;
 
     private final static Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        return orderDao.countOrder(orderQueryParams);
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        //先從 DAO 取得「分頁後」的訂單主檔清單 (例如：第 1 到 10 筆訂單)
+        // 此時拿到的 Order 物件中，orderItemList 欄位還是空的 (null)
+        List<Order> orderList = orderDao.getOrders(orderQueryParams);
+
+        //使用 for-each 迴圈，逐一處理清單中的每一筆訂單
+        for(Order order : orderList){
+            //根據每一筆訂單的 orderId，去 order_item 表中查出該訂單的所有商品明細
+            List<OrderItem> orderItemList = orderDao.getOrderItemByOrderId(order.getOrderId());
+
+            //將查到的明細清單塞回該筆訂單物件中，完成「主從資料聚合」
+            order.setOrderItemList(orderItemList);
+        }
+        return orderList;
+    }
 
     @Override
     public Order getOrderById(Integer orderId) {

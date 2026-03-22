@@ -2,6 +2,7 @@ package com.jerryyang.springbootmall.dao.impl;
 
 
 import com.jerryyang.springbootmall.dao.OrderDao;
+import com.jerryyang.springbootmall.dto.OrderQueryParams;
 import com.jerryyang.springbootmall.model.Order;
 import com.jerryyang.springbootmall.model.OrderItem;
 import com.jerryyang.springbootmall.rowmapper.OrderItemRowMapper;
@@ -23,6 +24,44 @@ public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        //定義 SQL 聚合函數 count(*)
+        String sql = "SELECT count(*) FROM `order` WHERE 1=1";
+
+        //建立參數 Map
+        Map<String, Object> map = new HashMap<>();
+
+        sql = addFilteringSql(sql, map, orderQueryParams);
+
+        //執行查詢。queryForObject 用於回傳單一結果（如數字、字串）。
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+
+        return total;
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        //SQL 語句：查詢訂單主表。
+        String sql = "SELECT order_id, user_id, total_amount, created_date, last_modified_date FROM `order` WHERE 1=1";
+
+        Map<String, Object> map = new HashMap<>();
+
+        sql = addFilteringSql(sql, map, orderQueryParams);
+
+        //設定為「最新訂單排在最前面」(DESC)
+        sql = sql + " ORDER BY created_date DESC";
+
+        //加入 LIMIT 與 OFFSET，:limit 代表每一頁抓幾筆，:offset 代表從第幾筆開始跳過
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", orderQueryParams.getLimit());
+        map.put("offset", orderQueryParams.getOffset());
+
+        List<Order> orderList = namedParameterJdbcTemplate.query(sql, map, new OrderRowMapper());
+
+        return orderList;
+    }
 
     @Override
     public Order getOrderById(Integer orderId) {
@@ -119,5 +158,15 @@ public class OrderDaoImpl implements OrderDao {
 
         //執行批次更新。Spring 會將這一組參數陣列一次性發送給資料庫，大幅減少連線開銷
         namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
+    }
+
+    private String addFilteringSql(String sql, Map<String, Object> map, OrderQueryParams orderQueryParams){
+        //檢查參數物件中是否有傳入 userId
+        if(orderQueryParams.getUserId() != null){
+            sql = sql + " AND user_id = :user_id";
+            map.put("user_id", orderQueryParams.getUserId());
+        }
+
+        return sql;
     }
 }
