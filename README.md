@@ -4,7 +4,7 @@
 ---
 
 ## 技術棧 
-* **Framework:** Java 17, Spring Boot 3 (RESTful API Design)
+* **Technical Stack:** Java 17, Spring Boot 3 (RESTful API Design)
 * **Database:** MySQL, Spring JDBC
 * **Security:** Password Hashing 
 * **Architecture:** Layered Architecture (Controller, Service, DAO)
