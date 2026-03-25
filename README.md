@@ -26,8 +26,6 @@
 
 ---
 
-## API Example
-
 ## API Examples
 
 ---
@@ -36,13 +34,15 @@
 
 **POST** `/users/login`
 
-#### Request
+#### Request:
 ```json
 {
   "email": "test6@gmail.com",
   "password": "123"
 }
-
+```
+#### Response:
+```json
 {
   "userId": 6,
   "createDate": "2026-03-20 21:15:19",
@@ -53,7 +53,7 @@
 ### 2. Create Product
 POST /products
 
-#### Request
+#### Request:
 ```json
 {
   "productName": "Toyota",
@@ -63,7 +63,7 @@ POST /products
   "stock": 5
 }
 ```
-Response:
+#### Response:
 ```json
 {
   "productId": 3,
