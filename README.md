@@ -28,36 +28,43 @@
 
 ## API Example
 
-### 1. User Login
-POST /users/login
+## API Examples
 
-Request:
+---
+
+### 1. User Login
+
+**POST** `/users/login`
+
+#### Request
+```json
 {
-	"email":"test6@gmail.com",
-  "password":"123"
+  "email": "test6@gmail.com",
+  "password": "123"
 }
 
-Response:
 {
   "userId": 6,
   "createDate": "2026-03-20 21:15:19",
   "lastModifiedDate": "2026-03-20 21:15:19",
-  "e_mail": "test6@gmail.com"
+  "email": "test6@gmail.com"
 }
-
+```
 ### 2. Create Product
 POST /products
 
-Request:
+#### Request
+```json
 {
-	"productName": "Toyota",
+  "productName": "Toyota",
   "category": "CAR",
   "imageUrl": "https://www.hotaimotor.com.tw/htfile/news-images/news-content-1735812859471.png",
-	"price": 1000,
+  "price": 1000,
   "stock": 5
 }
-
+```
 Response:
+```json
 {
   "productId": 3,
   "productName": "Toyota",
@@ -69,6 +76,7 @@ Response:
   "createdDate": "2026-03-19 14:13:15",
   "lastModifiedDate": "2026-03-19 14:13:15"
 }
+```
 
 ---
 
