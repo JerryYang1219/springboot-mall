@@ -26,6 +26,52 @@
 
 ---
 
+## API Example
+
+### 1. User Login
+POST /users/login
+
+Request:
+{
+	"email":"test6@gmail.com",
+  "password":"123"
+}
+
+Response:
+{
+  "userId": 6,
+  "createDate": "2026-03-20 21:15:19",
+  "lastModifiedDate": "2026-03-20 21:15:19",
+  "e_mail": "test6@gmail.com"
+}
+
+### 2. Create Product
+POST /products
+
+Request:
+{
+	"productName": "Toyota",
+  "category": "CAR",
+  "imageUrl": "https://www.hotaimotor.com.tw/htfile/news-images/news-content-1735812859471.png",
+	"price": 1000,
+  "stock": 5
+}
+
+Response:
+{
+  "productId": 3,
+  "productName": "Toyota",
+  "category": "CAR",
+  "imageUrl": "https://www.hotaimotor.com.tw/htfile/news-images/news-content-1735812859471.png",
+  "price": 1000,
+  "stock": 5,
+  "description": null,
+  "createdDate": "2026-03-19 14:13:15",
+  "lastModifiedDate": "2026-03-19 14:13:15"
+}
+
+---
+
 ## 📂 專案結構 (Directory Structure)
 ```text
 src/main/java/com/jerryyang/springbootmall
